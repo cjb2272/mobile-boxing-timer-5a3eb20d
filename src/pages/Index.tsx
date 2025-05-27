@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import TimerButton from '../components/TimerButton';
 import MainTimer from '../components/MainTimer';
 import ControlPanel from '../components/ControlPanel';
+import TimerEditDialog from '../components/TimerEditDialog';
 
 interface Timer {
   id: number;
@@ -12,7 +12,7 @@ interface Timer {
 
 const Index = () => {
   const [isDark, setIsDark] = useState(false);
-  const [timers] = useState<Timer[]>([
+  const [timers, setTimers] = useState<Timer[]>([
     { id: 1, label: 'Round 1', duration: 180 }, // 3 minutes
     { id: 2, label: 'Round 2', duration: 300 }, // 5 minutes
     { id: 3, label: 'HIIT', duration: 30 },     // 30 seconds
@@ -26,6 +26,8 @@ const Index = () => {
   const [autoLoop, setAutoLoop] = useState(false);
   const [breakDuration, setBreakDuration] = useState(30);
   const [isBreak, setIsBreak] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingTimer, setEditingTimer] = useState<Timer | null>(null);
 
   // Theme management
   useEffect(() => {
@@ -61,6 +63,24 @@ const Index = () => {
       setCurrentTime(timer?.duration || 0);
       setIsRunning(false);
       setIsBreak(false);
+    }
+  };
+
+  const handleLongPress = (timer: Timer) => {
+    setEditingTimer(timer);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveTimer = (id: number, label: string, duration: number) => {
+    setTimers(prev => prev.map(timer => 
+      timer.id === id 
+        ? { ...timer, label, duration }
+        : timer
+    ));
+    
+    // If we're editing the currently active timer, update current time
+    if (activeTimerId === id && !isRunning) {
+      setCurrentTime(duration);
     }
   };
 
@@ -118,28 +138,48 @@ const Index = () => {
     }`}>
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Boxing Timer
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Tap a timer to get started
+            Tap to start • Hold to edit
           </p>
         </div>
 
-        {/* Timer Buttons */}
-        <div className="grid grid-cols-1 gap-3 mb-8">
-          {timers.map((timer) => (
+        {/* Timer Buttons - New Layout */}
+        <div className="mb-6">
+          {/* Large Timer (first one) */}
+          <div className="mb-3">
             <TimerButton
-              key={timer.id}
-              label={timer.label}
-              duration={timer.duration}
-              isActive={activeTimerId === timer.id}
-              isRunning={isRunning && activeTimerId === timer.id && !isBreak}
-              currentTime={activeTimerId === timer.id && !isBreak ? currentTime : timer.duration}
-              onClick={() => selectTimer(timer.id)}
+              key={timers[0].id}
+              label={timers[0].label}
+              duration={timers[0].duration}
+              isActive={activeTimerId === timers[0].id}
+              isRunning={isRunning && activeTimerId === timers[0].id && !isBreak}
+              currentTime={activeTimerId === timers[0].id && !isBreak ? currentTime : timers[0].duration}
+              onClick={() => selectTimer(timers[0].id)}
+              onLongPress={() => handleLongPress(timers[0])}
+              size="large"
             />
-          ))}
+          </div>
+          
+          {/* Smaller Timers (2x2 grid) */}
+          <div className="grid grid-cols-2 gap-3">
+            {timers.slice(1).map((timer) => (
+              <TimerButton
+                key={timer.id}
+                label={timer.label}
+                duration={timer.duration}
+                isActive={activeTimerId === timer.id}
+                isRunning={isRunning && activeTimerId === timer.id && !isBreak}
+                currentTime={activeTimerId === timer.id && !isBreak ? currentTime : timer.duration}
+                onClick={() => selectTimer(timer.id)}
+                onLongPress={() => handleLongPress(timer)}
+                size="small"
+              />
+            ))}
+          </div>
         </div>
 
         {/* Main Timer Display */}
@@ -162,6 +202,14 @@ const Index = () => {
           onBreakDurationChange={setBreakDuration}
           onThemeToggle={toggleTheme}
           isDark={isDark}
+        />
+
+        {/* Timer Edit Dialog */}
+        <TimerEditDialog
+          isOpen={editDialogOpen}
+          onClose={() => setEditDialogOpen(false)}
+          timer={editingTimer}
+          onSave={handleSaveTimer}
         />
       </div>
     </div>

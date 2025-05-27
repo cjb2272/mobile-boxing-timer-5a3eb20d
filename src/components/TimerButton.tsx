@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Play, Pause } from 'lucide-react';
 
 interface TimerButtonProps {
@@ -9,6 +9,8 @@ interface TimerButtonProps {
   isRunning: boolean;
   currentTime: number;
   onClick: () => void;
+  onLongPress: () => void;
+  size?: 'large' | 'small';
 }
 
 const TimerButton: React.FC<TimerButtonProps> = ({
@@ -17,8 +19,12 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   isActive,
   isRunning,
   currentTime,
-  onClick
+  onClick,
+  onLongPress,
+  size = 'large'
 }) => {
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -27,11 +33,45 @@ const TimerButton: React.FC<TimerButtonProps> = ({
 
   const progress = isActive ? ((duration - currentTime) / duration) * 100 : 0;
 
+  const handleTouchStart = () => {
+    longPressTimer.current = setTimeout(() => {
+      onLongPress();
+    }, 800); // 800ms for long press
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleClick = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+      onClick();
+    }
+  };
+
+  const sizeClasses = size === 'large' 
+    ? 'min-h-[100px] p-6' 
+    : 'min-h-[80px] p-4';
+
+  const textSizes = size === 'large'
+    ? 'text-xl'
+    : 'text-lg';
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={handleTouchEnd}
       className={`
-        relative overflow-hidden rounded-xl p-4 min-h-[80px] w-full
+        relative overflow-hidden rounded-xl w-full ${sizeClasses}
         transition-all duration-200 transform active:scale-95
         ${isActive 
           ? 'bg-red-600 dark:bg-red-500 text-white shadow-lg scale-105' 
@@ -49,7 +89,7 @@ const TimerButton: React.FC<TimerButtonProps> = ({
       
       <div className="flex items-center justify-between">
         <div className="text-left">
-          <div className="font-bold text-lg">{label}</div>
+          <div className={`font-bold ${textSizes}`}>{label}</div>
           <div className="text-sm opacity-75">
             {isActive ? formatTime(currentTime) : formatTime(duration)}
           </div>
