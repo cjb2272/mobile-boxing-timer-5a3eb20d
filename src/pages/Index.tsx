@@ -85,16 +85,28 @@ const Index = () => {
   };
 
   const toggleTimer = () => {
-    setIsRunning(!isRunning);
+    console.log('toggleTimer called - currentTime:', currentTime, 'isRunning:', isRunning, 'activeTimer:', activeTimer?.label);
+    
+    if (!isRunning && currentTime === 0 && activeTimer) {
+      // Timer has finished and user wants to restart it
+      console.log('Restarting finished timer, resetting currentTime to:', activeTimer.duration);
+      setCurrentTime(activeTimer.duration);
+      setIsRunning(true);
+    } else {
+      // Normal toggle behavior
+      setIsRunning(!isRunning);
+    }
   };
 
   const startBreak = useCallback(() => {
+    console.log('Starting break with duration:', breakDuration);
     setIsBreak(true);
     setCurrentTime(breakDuration);
     setIsRunning(true);
   }, [breakDuration]);
 
   const endBreak = useCallback(() => {
+    console.log('Ending break, returning to timer:', activeTimer?.label);
     setIsBreak(false);
     if (activeTimer) {
       setCurrentTime(activeTimer.duration);
@@ -109,15 +121,20 @@ const Index = () => {
     if (isRunning && currentTime > 0) {
       interval = setInterval(() => {
         setCurrentTime(prev => {
+          console.log('Timer tick - currentTime:', prev, 'isBreak:', isBreak, 'autoLoop:', autoLoop);
+          
           if (prev <= 1) {
+            console.log('Timer reached 0, stopping. AutoLoop:', autoLoop, 'isBreak:', isBreak);
             setIsRunning(false);
             
             if (autoLoop) {
               if (isBreak) {
                 // Break ended, start timer again
+                console.log('Auto-loop: Break ended, starting timer');
                 setTimeout(endBreak, 100);
               } else {
                 // Timer ended, start break
+                console.log('Auto-loop: Timer ended, starting break');
                 setTimeout(startBreak, 100);
               }
             }
