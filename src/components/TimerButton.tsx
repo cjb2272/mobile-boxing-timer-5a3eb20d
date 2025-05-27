@@ -24,6 +24,7 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   size = 'large'
 }) => {
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -34,7 +35,9 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   const progress = isActive ? ((duration - currentTime) / duration) * 100 : 0;
 
   const handleTouchStart = () => {
+    isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
       onLongPress();
     }, 800); // 800ms for long press
   };
@@ -47,11 +50,12 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   };
 
   const handleClick = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
+    // Only execute onClick if it wasn't a long press
+    if (!isLongPress.current) {
       onClick();
     }
+    // Reset the long press flag
+    isLongPress.current = false;
   };
 
   const sizeClasses = size === 'large' 
