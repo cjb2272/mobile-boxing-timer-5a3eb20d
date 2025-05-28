@@ -1,5 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import BreakDurationButton from './BreakDurationButton';
+import BreakEditDialog from './BreakEditDialog';
 
 interface ControlPanelProps {
   autoLoop: boolean;
@@ -18,7 +20,31 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onThemeToggle,
   isDark
 }) => {
-  const breakOptions = [15, 30, 45, 60, 90, 120];
+  const [breakOptions, setBreakOptions] = useState([15, 30, 45, 60, 90, 120]);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  const handleBreakEdit = (duration: number) => {
+    const index = breakOptions.indexOf(duration);
+    if (index !== -1) {
+      setEditingIndex(index);
+      setEditDialogOpen(true);
+    }
+  };
+
+  const handleSaveBreakDuration = (newDuration: number) => {
+    if (editingIndex !== null) {
+      const newOptions = [...breakOptions];
+      const oldDuration = newOptions[editingIndex];
+      newOptions[editingIndex] = newDuration;
+      setBreakOptions(newOptions);
+      
+      // If the edited duration was the currently selected one, update it
+      if (breakDuration === oldDuration) {
+        onBreakDurationChange(newDuration);
+      }
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -47,19 +73,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </label>
           <div className="grid grid-cols-3 gap-2">
             {breakOptions.map((duration) => (
-              <button
+              <BreakDurationButton
                 key={duration}
-                onClick={() => onBreakDurationChange(duration)}
-                className={`
-                  px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${breakDuration === duration
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600'
-                  }
-                `}
-              >
-                {duration}s
-              </button>
+                duration={duration}
+                isSelected={breakDuration === duration}
+                onSelect={onBreakDurationChange}
+                onEdit={handleBreakEdit}
+              />
             ))}
           </div>
         </div>
@@ -71,6 +91,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       >
         {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
       </button>
+
+      <BreakEditDialog
+        isOpen={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        currentDuration={editingIndex !== null ? breakOptions[editingIndex] : 0}
+        onSave={handleSaveBreakDuration}
+      />
     </div>
   );
 };
