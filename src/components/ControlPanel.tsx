@@ -1,6 +1,5 @@
 
-import React, { useState } from 'react';
-import TimeInput from './TimeInput';
+import React from 'react';
 
 interface ControlPanelProps {
   autoLoop: boolean;
@@ -19,23 +18,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onThemeToggle,
   isDark
 }) => {
-  const [breakMinutes, setBreakMinutes] = useState(Math.floor(breakDuration / 60));
-  const [breakSeconds, setBreakSeconds] = useState(breakDuration % 60);
-
-  const handleBreakTimeChange = (minutes: number, seconds: number) => {
-    const totalSeconds = minutes * 60 + seconds;
-    onBreakDurationChange(totalSeconds);
-  };
-
-  const handleMinutesChange = (minutes: number) => {
-    setBreakMinutes(minutes);
-    handleBreakTimeChange(minutes, breakSeconds);
-  };
-
-  const handleSecondsChange = (seconds: number) => {
-    setBreakSeconds(seconds);
-    handleBreakTimeChange(breakMinutes, seconds);
-  };
+  const breakOptions = [15, 30, 45, 60, 90, 120];
 
   return (
     <div className="space-y-4">
@@ -59,13 +42,26 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
       {autoLoop && (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-          <TimeInput
-            minutes={breakMinutes}
-            seconds={breakSeconds}
-            onMinutesChange={handleMinutesChange}
-            onSecondsChange={handleSecondsChange}
-            label="Break Duration"
-          />
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            Break Duration
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {breakOptions.map((duration) => (
+              <button
+                key={duration}
+                onClick={() => onBreakDurationChange(duration)}
+                className={`
+                  px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                  ${breakDuration === duration
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600'
+                  }
+                `}
+              >
+                {duration}s
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

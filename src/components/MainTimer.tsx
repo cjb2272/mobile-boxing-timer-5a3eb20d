@@ -56,28 +56,26 @@ const MainTimer: React.FC<MainTimerProps> = ({
         </div>
       )}
 
-      <div className="flex justify-center">
-        <button
-          onClick={onToggle}
-          disabled={!activeTimerLabel}
-          className={`
-            w-32 h-32 rounded-full flex items-center justify-center
-            transition-all duration-200 transform active:scale-95
-            ${!activeTimerLabel 
-              ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed' 
-              : isRunning 
-                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
-                : 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
-            }
-          `}
-        >
-          {isRunning ? (
-            <Pause className="w-12 h-12" />
-          ) : (
-            <Play className="w-12 h-12 ml-1" />
-          )}
-        </button>
-      </div>
+      <button
+        onClick={onToggle}
+        disabled={!activeTimerLabel}
+        className={`
+          w-32 h-32 rounded-full flex items-center justify-center
+          transition-all duration-200 transform active:scale-95
+          ${!activeTimerLabel 
+            ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed' 
+            : isRunning 
+              ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+              : 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
+          }
+        `}
+      >
+        {isRunning ? (
+          <Pause className="w-12 h-12" />
+        ) : (
+          <Play className="w-12 h-12 ml-1" />
+        )}
+      </button>
     </div>
   );
 };
