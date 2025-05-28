@@ -150,16 +150,14 @@ const Index = () => {
   }, [isRunning, currentTime, autoLoop, isBreak, startBreak, endBreak]);
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark ? 'dark bg-gray-900' : 'bg-gray-50'
-    }`}>
+    <div className="min-h-screen transition-colors duration-300 bg-background text-foreground" style={{ fontFamily: 'var(--font-primary)' }}>
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold mb-2">
             Boxing Timer
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             Tap to start • Hold to edit
           </p>
         </div>
@@ -217,8 +215,6 @@ const Index = () => {
           breakDuration={breakDuration}
           onToggleAutoLoop={() => setAutoLoop(!autoLoop)}
           onBreakDurationChange={setBreakDuration}
-          onThemeToggle={toggleTheme}
-          isDark={isDark}
         />
 
         {/* Timer Edit Dialog */}

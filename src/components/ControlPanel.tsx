@@ -1,15 +1,13 @@
-
 import React, { useState } from 'react';
 import BreakDurationButton from './BreakDurationButton';
 import BreakEditDialog from './BreakEditDialog';
+import ThemeSelector from './ThemeSelector';
 
 interface ControlPanelProps {
   autoLoop: boolean;
   breakDuration: number;
   onToggleAutoLoop: () => void;
   onBreakDurationChange: (duration: number) => void;
-  onThemeToggle: () => void;
-  isDark: boolean;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -17,8 +15,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   breakDuration,
   onToggleAutoLoop,
   onBreakDurationChange,
-  onThemeToggle,
-  isDark
 }) => {
   const [breakOptions, setBreakOptions] = useState([15, 30, 45, 60, 90, 120]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -85,12 +81,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         </div>
       )}
 
-      <button
-        onClick={onThemeToggle}
-        className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      >
-        {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
-      </button>
+      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+        <ThemeSelector />
+      </div>
 
       <BreakEditDialog
         isOpen={editDialogOpen}
