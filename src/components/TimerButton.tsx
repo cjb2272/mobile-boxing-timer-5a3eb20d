@@ -76,17 +76,16 @@ const TimerButton: React.FC<TimerButtonProps> = ({
       onMouseLeave={handleTouchEnd}
       className={`
         relative overflow-hidden rounded-xl w-full ${sizeClasses}
-        transition-all duration-200 transform active:scale-95
+        transition-all duration-200 transform active:scale-95 border
         ${isActive 
-          ? 'bg-red-600 dark:bg-red-500 text-white shadow-lg scale-105' 
-          : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
+          ? 'bg-primary text-primary-foreground shadow-lg scale-105 border-primary' 
+          : 'bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground border-border'
         }
-        border-2 ${isActive ? 'border-red-400' : 'border-transparent'}
       `}
     >
       {isActive && (
         <div 
-          className="absolute bottom-0 left-0 h-1 bg-white/30 transition-all duration-1000 ease-linear"
+          className="absolute bottom-0 left-0 h-1 bg-primary-foreground/30 transition-all duration-1000 ease-linear"
           style={{ width: `${progress}%` }}
         />
       )}

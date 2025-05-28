@@ -60,11 +60,11 @@ const BreakDurationButton: React.FC<BreakDurationButtonProps> = ({
       onTouchStart={handleMouseDown}
       onTouchEnd={handleMouseUp}
       className={`
-        px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+        px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border
         ${isPressed ? 'scale-95' : ''}
         ${isSelected
-          ? 'bg-red-600 text-white'
-          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600'
+          ? 'bg-primary text-primary-foreground border-primary'
+          : 'bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground'
         }
       `}
     >

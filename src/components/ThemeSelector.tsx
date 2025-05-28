@@ -8,19 +8,19 @@ const ThemeSelector: React.FC = () => {
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label className="block text-sm font-medium text-card-foreground mb-2">
         App Style
       </label>
       <Select value={currentTheme.id} onValueChange={changeTheme}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full bg-background border-border text-foreground">
           <SelectValue placeholder="Select a style" />
         </SelectTrigger>
-        <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 z-50">
+        <SelectContent className="bg-card border-border text-card-foreground z-50">
           {themes.map((theme) => (
             <SelectItem 
               key={theme.id} 
               value={theme.id}
-              className="hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="hover:bg-accent hover:text-accent-foreground"
             >
               {theme.name}
             </SelectItem>

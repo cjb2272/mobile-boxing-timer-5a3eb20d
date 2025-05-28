@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import BreakDurationButton from './BreakDurationButton';
 import BreakEditDialog from './BreakEditDialog';
@@ -44,18 +45,18 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-        <span className="font-medium text-gray-700 dark:text-gray-300">Auto Loop</span>
+      <div className="flex items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm">
+        <span className="font-medium text-card-foreground">Auto Loop</span>
         <button
           onClick={onToggleAutoLoop}
           className={`
             relative inline-flex h-6 w-11 items-center rounded-full transition-colors
-            ${autoLoop ? 'bg-red-600' : 'bg-gray-300 dark:bg-gray-600'}
+            ${autoLoop ? 'bg-primary' : 'bg-muted'}
           `}
         >
           <span
             className={`
-              inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+              inline-block h-4 w-4 transform rounded-full bg-background transition-transform
               ${autoLoop ? 'translate-x-6' : 'translate-x-1'}
             `}
           />
@@ -63,8 +64,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </div>
 
       {autoLoop && (
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
+          <label className="block text-sm font-medium text-card-foreground mb-3">
             Break Duration
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -81,7 +82,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         </div>
       )}
 
-      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+      <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
         <ThemeSelector />
       </div>
 

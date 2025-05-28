@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;600&family=Press+Start+2P&family=Lato:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;600&family=Press+Start+2P&family=Lato:wght@400;700&family=Share+Tech+Mono&family=Fira+Code&family=Inconsolata&family=Source+Code+Pro&family=Roboto+Mono&family=Ubuntu+Mono&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -29,6 +29,10 @@
     --radius: 0.5rem;
     --font-primary: 'Inter', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', Consolas, monospace;
+    --border-radius: 0.5rem;
+    --use-shadows: 0;
+    --use-gradients: 0;
+    --button-style: rounded;
   }
 
   .dark {
@@ -62,5 +66,27 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-primary);
+  }
+  
+  .rounded-xl {
+    border-radius: var(--border-radius);
+  }
+  
+  .rounded-lg {
+    border-radius: calc(var(--border-radius) * 0.75);
+  }
+  
+  .rounded-full {
+    border-radius: 9999px;
+  }
+}
+
+@layer utilities {
+  .theme-shadow {
+    box-shadow: var(--use-shadows) == 1 ? 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) : none;
+  }
+  
+  .theme-gradient {
+    background: var(--use-gradients) == 1 ? linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) : hsl(var(--primary));
   }
 }
