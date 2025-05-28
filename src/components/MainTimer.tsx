@@ -29,7 +29,7 @@ const MainTimer: React.FC<MainTimerProps> = ({
 
   return (
     <div className="text-center">
-      <div className={`text-sm font-medium mb-2 ${isBreak ? 'text-amber-600 dark:text-amber-400' : 'text-gray-600 dark:text-gray-400'}`}>
+      <div className={`text-sm font-medium mb-2 ${isBreak ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
         {isBreak ? 'BREAK TIME' : activeTimerLabel || 'SELECT TIMER'}
       </div>
       
@@ -38,18 +38,19 @@ const MainTimer: React.FC<MainTimerProps> = ({
           text-8xl md:text-9xl font-mono font-bold mb-6 leading-none
           ${isBreak 
             ? 'text-amber-600 dark:text-amber-400' 
-            : 'text-gray-900 dark:text-white'
+            : 'text-foreground'
           }
         `}
+        style={{ fontFamily: 'var(--font-mono)' }}
       >
         {formatTime(currentTime)}
       </div>
 
       {totalTime > 0 && (
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-6">
+        <div className="w-full bg-muted rounded-full h-2 mb-6">
           <div 
             className={`h-2 rounded-full transition-all duration-1000 ease-linear ${
-              isBreak ? 'bg-amber-500' : 'bg-red-500'
+              isBreak ? 'bg-amber-500' : 'bg-primary'
             }`}
             style={{ width: `${progress}%` }}
           />
@@ -64,10 +65,10 @@ const MainTimer: React.FC<MainTimerProps> = ({
             w-32 h-32 rounded-full flex items-center justify-center
             transition-all duration-200 transform active:scale-95
             ${!activeTimerLabel 
-              ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed' 
+              ? 'bg-muted text-muted-foreground cursor-not-allowed' 
               : isRunning 
-                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
-                : 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
+                ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg' 
+                : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg'
             }
           `}
         >
