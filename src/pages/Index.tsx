@@ -28,6 +28,7 @@ const Index = () => {
   const [isBreak, setIsBreak] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingTimer, setEditingTimer] = useState<Timer | null>(null);
+  const [roundCount, setRoundCount] = useState(0);
 
   // Theme management
   useEffect(() => {
@@ -63,6 +64,8 @@ const Index = () => {
       setCurrentTime(timer?.duration || 0);
       setIsRunning(false);
       setIsBreak(false);
+      // Reset round count when switching timers
+      setRoundCount(0);
     }
   };
 
@@ -106,13 +109,15 @@ const Index = () => {
   }, [breakDuration]);
 
   const endBreak = useCallback(() => {
-    console.log('Ending break, returning to timer:', activeTimer?.label);
+    console.log('Ending break, completing round. Round count will be:', roundCount + 1);
     setIsBreak(false);
+    // Increment round count when break ends (completing a full cycle)
+    setRoundCount(prev => prev + 1);
     if (activeTimer) {
       setCurrentTime(activeTimer.duration);
       setIsRunning(true);
     }
-  }, [activeTimer]);
+  }, [activeTimer, roundCount]);
 
   // Timer countdown effect
   useEffect(() => {
@@ -205,6 +210,7 @@ const Index = () => {
             isRunning={isRunning}
             isBreak={isBreak}
             activeTimerLabel={isBreak ? 'BREAK' : (activeTimer?.label || '')}
+            roundCount={roundCount}
             onToggle={toggleTimer}
           />
         </div>

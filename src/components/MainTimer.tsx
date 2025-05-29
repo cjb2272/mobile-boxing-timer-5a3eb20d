@@ -8,6 +8,7 @@ interface MainTimerProps {
   isRunning: boolean;
   isBreak: boolean;
   activeTimerLabel: string;
+  roundCount: number;
   onToggle: () => void;
 }
 
@@ -17,6 +18,7 @@ const MainTimer: React.FC<MainTimerProps> = ({
   isRunning,
   isBreak,
   activeTimerLabel,
+  roundCount,
   onToggle
 }) => {
   const formatTime = (seconds: number) => {
@@ -32,6 +34,13 @@ const MainTimer: React.FC<MainTimerProps> = ({
       <div className={`text-sm font-medium mb-2 ${isBreak ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
         {isBreak ? 'BREAK TIME' : activeTimerLabel || 'SELECT TIMER'}
       </div>
+
+      {/* Round Counter */}
+      {activeTimerLabel && (
+        <div className="text-lg font-bold mb-4 text-primary">
+          Round {roundCount}
+        </div>
+      )}
       
       <div 
         className={`
