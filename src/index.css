@@ -30,8 +30,7 @@
     --font-primary: 'Inter', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', Consolas, monospace;
     --border-radius: 0.5rem;
-    --use-shadows: 0;
-    --use-gradients: 0;
+    --box-shadow: none;
     --button-style: rounded;
   }
 
@@ -83,10 +82,10 @@
 
 @layer utilities {
   .theme-shadow {
-    box-shadow: var(--use-shadows) == 1 ? 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) : none;
+    box-shadow: var(--box-shadow);
   }
   
   .theme-gradient {
-    background: var(--use-gradients) == 1 ? linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) : hsl(var(--primary));
+    background: var(--gradient-bg, hsl(var(--primary)));
   }
 }
