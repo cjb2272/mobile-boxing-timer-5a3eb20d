@@ -35,9 +35,9 @@ const MainTimer: React.FC<MainTimerProps> = ({
         {isBreak ? 'BREAK TIME' : activeTimerLabel || 'SELECT TIMER'}
       </div>
 
-      {/* Round Counter */}
+      {/* Large Round Counter */}
       {activeTimerLabel && (
-        <div className="text-lg font-bold mb-4 text-primary">
+        <div className="text-4xl md:text-5xl font-bold mb-6 text-primary">
           Round {roundCount}
         </div>
       )}

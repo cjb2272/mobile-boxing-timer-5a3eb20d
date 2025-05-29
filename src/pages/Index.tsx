@@ -3,6 +3,7 @@ import TimerButton from '../components/TimerButton';
 import MainTimer from '../components/MainTimer';
 import ControlPanel from '../components/ControlPanel';
 import TimerEditDialog from '../components/TimerEditDialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 
 interface Timer {
   id: number;
@@ -67,6 +68,11 @@ const Index = () => {
       // Reset round count when switching timers
       setRoundCount(0);
     }
+  };
+
+  const handleTimerSelect = (value: string) => {
+    const timerId = parseInt(value);
+    selectTimer(timerId);
   };
 
   const handleLongPress = (timer: Timer) => {
@@ -163,43 +169,43 @@ const Index = () => {
             Boxing Timer
           </h1>
           <p className="text-muted-foreground">
-            Tap to start • Hold to edit
+            Select a timer • Tap to start • Hold to edit
           </p>
         </div>
 
-        {/* Timer Buttons - New Layout */}
-        <div className="mb-6">
-          {/* Large Timer (first one) */}
-          <div className="mb-3">
+        {/* Single Large Timer Display */}
+        {activeTimer && (
+          <div className="mb-4">
             <TimerButton
-              key={timers[0].id}
-              label={timers[0].label}
-              duration={timers[0].duration}
-              isActive={activeTimerId === timers[0].id}
-              isRunning={isRunning && activeTimerId === timers[0].id && !isBreak}
-              currentTime={activeTimerId === timers[0].id && !isBreak ? currentTime : timers[0].duration}
-              onClick={() => selectTimer(timers[0].id)}
-              onLongPress={() => handleLongPress(timers[0])}
+              label={activeTimer.label}
+              duration={activeTimer.duration}
+              isActive={true}
+              isRunning={isRunning && !isBreak}
+              currentTime={!isBreak ? currentTime : activeTimer.duration}
+              onClick={() => selectTimer(activeTimer.id)}
+              onLongPress={() => handleLongPress(activeTimer)}
               size="large"
             />
           </div>
-          
-          {/* Smaller Timers (2x2 grid) */}
-          <div className="grid grid-cols-2 gap-3">
-            {timers.slice(1).map((timer) => (
-              <TimerButton
-                key={timer.id}
-                label={timer.label}
-                duration={timer.duration}
-                isActive={activeTimerId === timer.id}
-                isRunning={isRunning && activeTimerId === timer.id && !isBreak}
-                currentTime={activeTimerId === timer.id && !isBreak ? currentTime : timer.duration}
-                onClick={() => selectTimer(timer.id)}
-                onLongPress={() => handleLongPress(timer)}
-                size="small"
-              />
-            ))}
-          </div>
+        )}
+
+        {/* Timer Selection Dropdown */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Select Timer Preset
+          </label>
+          <Select value={activeTimerId?.toString() || ""} onValueChange={handleTimerSelect}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Choose a timer preset" />
+            </SelectTrigger>
+            <SelectContent>
+              {timers.map((timer) => (
+                <SelectItem key={timer.id} value={timer.id.toString()}>
+                  {timer.label} ({Math.floor(timer.duration / 60)}:{(timer.duration % 60).toString().padStart(2, '0')})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Main Timer Display */}
