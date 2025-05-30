@@ -258,7 +258,7 @@ const Index = () => {
                 </div>
               ))}
               <SelectItem value="add-new" className="border-t border-border mt-1 pt-1">
-                <div className="flex items-center gap-2 text-primary">
+                <div className="flex items-center gap-2 text-foreground">
                   <Plus size={16} />
                   <span>Add New Timer</span>
                 </div>

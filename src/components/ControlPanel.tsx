@@ -65,9 +65,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
       {autoLoop && (
         <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
-          <label className="block text-sm font-medium text-card-foreground mb-3">
-            Break Duration
-          </label>
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Break Duration
+            </label>
+            <p className="text-xs text-muted-foreground">
+              Tap to select • Hold to edit
+            </p>
+          </div>
           <div className="grid grid-cols-3 gap-2">
             {breakOptions.map((duration) => (
               <BreakDurationButton
