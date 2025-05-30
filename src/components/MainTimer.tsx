@@ -37,7 +37,7 @@ const MainTimer: React.FC<MainTimerProps> = ({
 
       {/* Large Round Counter */}
       {activeTimerLabel && (
-        <div className="text-4xl md:text-5xl font-bold mb-6 text-primary">
+        <div className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
           Round {roundCount}
         </div>
       )}
