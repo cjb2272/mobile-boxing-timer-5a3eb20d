@@ -4,6 +4,7 @@ import MainTimer from '../components/MainTimer';
 import ControlPanel from '../components/ControlPanel';
 import TimerEditDialog from '../components/TimerEditDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Plus, Minus } from 'lucide-react';
 
 interface Timer {
   id: number;
@@ -14,11 +15,9 @@ interface Timer {
 const Index = () => {
   const [isDark, setIsDark] = useState(false);
   const [timers, setTimers] = useState<Timer[]>([
-    { id: 1, label: 'Round 1', duration: 180 }, // 3 minutes
-    { id: 2, label: 'Round 2', duration: 300 }, // 5 minutes
-    { id: 3, label: 'HIIT', duration: 30 },     // 30 seconds
-    { id: 4, label: 'Rest', duration: 60 },     // 1 minute
-    { id: 5, label: 'Warm Up', duration: 600 }, // 10 minutes
+    { id: 1, label: '30 Second Round', duration: 30 },
+    { id: 2, label: '45 Second Round', duration: 45 },
+    { id: 3, label: '1 Minute Round', duration: 60 },
   ]);
 
   const [activeTimerId, setActiveTimerId] = useState<number | null>(null);
@@ -30,6 +29,7 @@ const Index = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingTimer, setEditingTimer] = useState<Timer | null>(null);
   const [roundCount, setRoundCount] = useState(0);
+  const [nextTimerId, setNextTimerId] = useState(4);
 
   // Theme management
   useEffect(() => {
@@ -71,8 +71,48 @@ const Index = () => {
   };
 
   const handleTimerSelect = (value: string) => {
+    if (value === 'add-new') {
+      handleAddTimer();
+      return;
+    }
+    
+    if (value.startsWith('delete-')) {
+      const timerId = parseInt(value.replace('delete-', ''));
+      handleDeleteTimer(timerId);
+      return;
+    }
+    
     const timerId = parseInt(value);
     selectTimer(timerId);
+  };
+
+  const handleAddTimer = () => {
+    const newTimer: Timer = {
+      id: nextTimerId,
+      label: `New Timer`,
+      duration: 60 // Default to 1 minute
+    };
+    setTimers(prev => [...prev, newTimer]);
+    setNextTimerId(prev => prev + 1);
+    setEditingTimer(newTimer);
+    setEditDialogOpen(true);
+  };
+
+  const handleDeleteTimer = (timerId: number) => {
+    if (timers.length <= 1) {
+      return; // Don't allow deleting if it's the last timer
+    }
+    
+    setTimers(prev => prev.filter(timer => timer.id !== timerId));
+    
+    // If we're deleting the active timer, reset
+    if (activeTimerId === timerId) {
+      setActiveTimerId(null);
+      setCurrentTime(0);
+      setIsRunning(false);
+      setIsBreak(false);
+      setRoundCount(0);
+    }
   };
 
   const handleLongPress = (timer: Timer) => {
@@ -200,10 +240,29 @@ const Index = () => {
             </SelectTrigger>
             <SelectContent>
               {timers.map((timer) => (
-                <SelectItem key={timer.id} value={timer.id.toString()}>
-                  {timer.label} ({Math.floor(timer.duration / 60)}:{(timer.duration % 60).toString().padStart(2, '0')})
-                </SelectItem>
+                <div key={timer.id} className="flex items-center group">
+                  <SelectItem value={timer.id.toString()} className="flex-1">
+                    {timer.label} ({Math.floor(timer.duration / 60)}:{(timer.duration % 60).toString().padStart(2, '0')})
+                  </SelectItem>
+                  {timers.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteTimer(timer.id);
+                      }}
+                      className="p-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Minus size={16} />
+                    </button>
+                  )}
+                </div>
               ))}
+              <SelectItem value="add-new" className="border-t border-border mt-1 pt-1">
+                <div className="flex items-center gap-2 text-primary">
+                  <Plus size={16} />
+                  <span>Add New Timer</span>
+                </div>
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
