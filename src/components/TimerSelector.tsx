@@ -22,6 +22,12 @@ const TimerSelector: React.FC<TimerSelectorProps> = ({
   onTimerSelect,
   onDeleteTimer,
 }) => {
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="mb-6">
       <label className="block text-sm font-medium text-foreground mb-2">
@@ -33,22 +39,9 @@ const TimerSelector: React.FC<TimerSelectorProps> = ({
         </SelectTrigger>
         <SelectContent>
           {timers.map((timer) => (
-            <div key={timer.id} className="flex items-center group">
-              <SelectItem value={timer.id.toString()} className="flex-1">
-                {timer.label} ({Math.floor(timer.duration / 60)}:{(timer.duration % 60).toString().padStart(2, '0')})
-              </SelectItem>
-              {timers.length > 1 && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteTimer(timer.id);
-                  }}
-                  className="p-1 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Minus size={16} />
-                </button>
-              )}
-            </div>
+            <SelectItem key={timer.id} value={timer.id.toString()}>
+              {timer.label} ({formatTime(timer.duration)})
+            </SelectItem>
           ))}
           <SelectItem value="add-new" className="border-t border-border mt-1 pt-1">
             <div className="flex items-center gap-2 text-foreground">
@@ -58,6 +51,25 @@ const TimerSelector: React.FC<TimerSelectorProps> = ({
           </SelectItem>
         </SelectContent>
       </Select>
+      
+      {/* Delete buttons outside of Select */}
+      {timers.length > 1 && (
+        <div className="mt-2 space-y-1">
+          <p className="text-xs text-muted-foreground mb-1">Delete timer:</p>
+          <div className="flex flex-wrap gap-1">
+            {timers.map((timer) => (
+              <button
+                key={`delete-${timer.id}`}
+                onClick={() => onDeleteTimer(timer.id)}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-destructive/10 text-destructive rounded hover:bg-destructive/20 transition-colors"
+              >
+                <Minus size={12} />
+                {timer.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

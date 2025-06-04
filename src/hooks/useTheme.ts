@@ -1,20 +1,17 @@
 
 import { useState, useEffect } from 'react';
 import { themes, Theme } from '../config/themes';
+import { useAppSettings } from './useAppSettings';
 
 export const useTheme = () => {
+  const { settings, updateThemeId } = useAppSettings();
   const [currentTheme, setCurrentTheme] = useState<Theme>(themes[0]);
 
   useEffect(() => {
-    const savedThemeId = localStorage.getItem('boxingTimer-themeId');
-    if (savedThemeId) {
-      const theme = themes.find(t => t.id === savedThemeId);
-      if (theme) {
-        setCurrentTheme(theme);
-        applyTheme(theme);
-      }
-    }
-  }, []);
+    const theme = themes.find(t => t.id === settings.themeId) || themes[0];
+    setCurrentTheme(theme);
+    applyTheme(theme);
+  }, [settings.themeId]);
 
   const applyTheme = (theme: Theme) => {
     const root = document.documentElement;
@@ -41,7 +38,7 @@ export const useTheme = () => {
     if (theme) {
       setCurrentTheme(theme);
       applyTheme(theme);
-      localStorage.setItem('boxingTimer-themeId', themeId);
+      updateThemeId(themeId);
     }
   };
 

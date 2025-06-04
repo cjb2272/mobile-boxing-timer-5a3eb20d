@@ -15,6 +15,7 @@ interface AppSettings {
   breakDuration: number;
   selectedTimerId: number | null;
   roundCount: number;
+  themeId: string;
 }
 
 const defaultSettings: AppSettings = {
@@ -29,6 +30,7 @@ const defaultSettings: AppSettings = {
   breakDuration: 30,
   selectedTimerId: null,
   roundCount: 0,
+  themeId: 'light',
 };
 
 export function useAppSettings() {
@@ -59,6 +61,10 @@ export function useAppSettings() {
     setSettings(prev => ({ ...prev, roundCount }));
   };
 
+  const updateThemeId = (themeId: string) => {
+    setSettings(prev => ({ ...prev, themeId }));
+  };
+
   const resetToDefaults = () => {
     setSettings(defaultSettings);
   };
@@ -71,6 +77,7 @@ export function useAppSettings() {
     updateBreakDuration,
     updateSelectedTimerId,
     updateRoundCount,
+    updateThemeId,
     resetToDefaults,
   };
 }
