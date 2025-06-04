@@ -15,7 +15,6 @@ interface Timer {
 }
 
 const Index = () => {
-  const [isDark, setIsDark] = useState(false);
   const {
     settings,
     updateTimers,
@@ -44,26 +43,6 @@ const Index = () => {
   const [nextTimerId, setNextTimerId] = useState(() => {
     return Math.max(...timers.map(t => t.id)) + 1;
   });
-
-  // Theme management
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('boxingTimer-theme');
-    if (savedTheme === 'dark') {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    if (!isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('boxingTimer-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('boxingTimer-theme', 'light');
-    }
-  };
 
   // Timer functionality
   const activeTimer = timers.find(t => t.id === activeTimerId);
@@ -225,7 +204,7 @@ const Index = () => {
   }, [isRunning, currentTime, autoLoop, isBreak, startBreak, endBreak]);
 
   return (
-    <div className="min-h-screen transition-colors duration-300 bg-background text-foreground" style={{ fontFamily: 'var(--font-primary)' }}>
+    <div className="min-h-screen transition-colors duration-300 bg-background text-foreground">
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="text-center mb-6">
