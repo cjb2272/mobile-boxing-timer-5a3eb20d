@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Edit } from 'lucide-react';
 
 interface Timer {
   id: number;
@@ -14,6 +14,7 @@ interface TimerSelectorProps {
   activeTimerId: number | null;
   onTimerSelect: (value: string) => void;
   onDeleteTimer: (timerId: number) => void;
+  onEditTimer: (timer: Timer) => void;
 }
 
 const TimerSelector: React.FC<TimerSelectorProps> = ({
@@ -21,6 +22,7 @@ const TimerSelector: React.FC<TimerSelectorProps> = ({
   activeTimerId,
   onTimerSelect,
   onDeleteTimer,
+  onEditTimer,
 }) => {
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -28,11 +30,14 @@ const TimerSelector: React.FC<TimerSelectorProps> = ({
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const selectedTimer = timers.find(t => t.id === activeTimerId);
+
   return (
-    <div className="mb-6">
-      <label className="block text-sm font-medium text-foreground mb-2">
+    <div className="mb-6 p-4 bg-card rounded-xl border border-border shadow-sm">
+      <label className="block text-sm font-medium text-card-foreground mb-2">
         Select Timer Preset
       </label>
+      
       <Select value={activeTimerId?.toString() || ""} onValueChange={onTimerSelect}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Choose a timer preset" />
@@ -52,22 +57,26 @@ const TimerSelector: React.FC<TimerSelectorProps> = ({
         </SelectContent>
       </Select>
       
-      {/* Delete buttons outside of Select */}
-      {timers.length > 1 && (
-        <div className="mt-2 space-y-1">
-          <p className="text-xs text-muted-foreground mb-1">Delete timer:</p>
-          <div className="flex flex-wrap gap-1">
-            {timers.map((timer) => (
-              <button
-                key={`delete-${timer.id}`}
-                onClick={() => onDeleteTimer(timer.id)}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-destructive/10 text-destructive rounded hover:bg-destructive/20 transition-colors"
-              >
-                <Minus size={12} />
-                {timer.label}
-              </button>
-            ))}
-          </div>
+      {/* Timer Actions */}
+      {selectedTimer && (
+        <div className="mt-3 flex items-center gap-2">
+          <button
+            onClick={() => onEditTimer(selectedTimer)}
+            className="flex items-center gap-1 px-3 py-1 text-xs bg-primary/10 text-primary rounded hover:bg-primary/20 transition-colors"
+          >
+            <Edit size={12} />
+            Edit "{selectedTimer.label}"
+          </button>
+          
+          {timers.length > 1 && (
+            <button
+              onClick={() => onDeleteTimer(selectedTimer.id)}
+              className="flex items-center gap-1 px-3 py-1 text-xs bg-destructive/10 text-destructive rounded hover:bg-destructive/20 transition-colors"
+            >
+              <Minus size={12} />
+              Delete
+            </button>
+          )}
         </div>
       )}
     </div>

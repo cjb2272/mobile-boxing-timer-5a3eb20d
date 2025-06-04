@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import TimerButton from './TimerButton';
 import MainTimer from './MainTimer';
 import ControlPanel from './ControlPanel';
 import TimerEditDialog from './TimerEditDialog';
@@ -53,36 +52,23 @@ const TimerContainer: React.FC = () => {
     }
   }, [activeTimer, isRunning]);
 
-  const selectTimer = (timerId: number) => {
-    if (activeTimerId === timerId) {
-      // Toggle play/pause for active timer
-      setIsRunning(!isRunning);
-    } else {
-      // Select new timer
-      updateSelectedTimerId(timerId);
-      const timer = timers.find(t => t.id === timerId);
-      setCurrentTime(timer?.duration || 0);
-      setIsRunning(false);
-      setIsBreak(false);
-      // Reset round count when switching timers
-      updateRoundCount(0);
-    }
-  };
-
   const handleTimerSelect = (value: string) => {
     if (value === 'add-new') {
       handleAddTimer();
       return;
     }
     
-    if (value.startsWith('delete-')) {
-      const timerId = parseInt(value.replace('delete-', ''));
-      handleDeleteTimer(timerId);
-      return;
-    }
-    
+    // Stop any running timer and select new timer
     const timerId = parseInt(value);
-    selectTimer(timerId);
+    setIsRunning(false);
+    setIsBreak(false);
+    updateSelectedTimerId(timerId);
+    updateRoundCount(0);
+    
+    const timer = timers.find(t => t.id === timerId);
+    if (timer) {
+      setCurrentTime(timer.duration);
+    }
   };
 
   const handleAddTimer = () => {
@@ -204,28 +190,13 @@ const TimerContainer: React.FC = () => {
 
   return (
     <>
-      {/* Single Large Timer Display */}
-      {activeTimer && (
-        <div className="mb-4">
-          <TimerButton
-            label={activeTimer.label}
-            duration={activeTimer.duration}
-            isActive={true}
-            isRunning={isRunning && !isBreak}
-            currentTime={!isBreak ? currentTime : activeTimer.duration}
-            onClick={() => selectTimer(activeTimer.id)}
-            onLongPress={() => handleLongPress(activeTimer)}
-            size="large"
-          />
-        </div>
-      )}
-
       {/* Timer Selection Dropdown */}
       <TimerSelector
         timers={timers}
         activeTimerId={activeTimerId}
         onTimerSelect={handleTimerSelect}
         onDeleteTimer={handleDeleteTimer}
+        onEditTimer={handleLongPress}
       />
 
       {/* Main Timer Display */}
