@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import TimerButton from '../components/TimerButton';
 import MainTimer from '../components/MainTimer';
@@ -5,6 +6,7 @@ import ControlPanel from '../components/ControlPanel';
 import TimerEditDialog from '../components/TimerEditDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Plus, Minus } from 'lucide-react';
+import { useAppSettings } from '../hooks/useAppSettings';
 
 interface Timer {
   id: number;
@@ -14,22 +16,34 @@ interface Timer {
 
 const Index = () => {
   const [isDark, setIsDark] = useState(false);
-  const [timers, setTimers] = useState<Timer[]>([
-    { id: 1, label: '30 Second Round', duration: 30 },
-    { id: 2, label: '45 Second Round', duration: 45 },
-    { id: 3, label: '1 Minute Round', duration: 60 },
-  ]);
+  const {
+    settings,
+    updateTimers,
+    updateBreakOptions,
+    updateAutoLoop,
+    updateBreakDuration,
+    updateSelectedTimerId,
+    updateRoundCount,
+  } = useAppSettings();
 
-  const [activeTimerId, setActiveTimerId] = useState<number | null>(null);
+  // Extract settings for easier access
+  const {
+    timers,
+    breakOptions,
+    autoLoop,
+    breakDuration,
+    selectedTimerId: activeTimerId,
+    roundCount,
+  } = settings;
+
   const [currentTime, setCurrentTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [autoLoop, setAutoLoop] = useState(false);
-  const [breakDuration, setBreakDuration] = useState(30);
   const [isBreak, setIsBreak] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingTimer, setEditingTimer] = useState<Timer | null>(null);
-  const [roundCount, setRoundCount] = useState(0);
-  const [nextTimerId, setNextTimerId] = useState(4);
+  const [nextTimerId, setNextTimerId] = useState(() => {
+    return Math.max(...timers.map(t => t.id)) + 1;
+  });
 
   // Theme management
   useEffect(() => {
@@ -54,19 +68,26 @@ const Index = () => {
   // Timer functionality
   const activeTimer = timers.find(t => t.id === activeTimerId);
 
+  // Initialize current time when active timer changes
+  useEffect(() => {
+    if (activeTimer && !isRunning) {
+      setCurrentTime(activeTimer.duration);
+    }
+  }, [activeTimer, isRunning]);
+
   const selectTimer = (timerId: number) => {
     if (activeTimerId === timerId) {
       // Toggle play/pause for active timer
       setIsRunning(!isRunning);
     } else {
       // Select new timer
-      setActiveTimerId(timerId);
+      updateSelectedTimerId(timerId);
       const timer = timers.find(t => t.id === timerId);
       setCurrentTime(timer?.duration || 0);
       setIsRunning(false);
       setIsBreak(false);
       // Reset round count when switching timers
-      setRoundCount(0);
+      updateRoundCount(0);
     }
   };
 
@@ -92,7 +113,7 @@ const Index = () => {
       label: `New Timer`,
       duration: 60 // Default to 1 minute
     };
-    setTimers(prev => [...prev, newTimer]);
+    updateTimers([...timers, newTimer]);
     setNextTimerId(prev => prev + 1);
     setEditingTimer(newTimer);
     setEditDialogOpen(true);
@@ -103,15 +124,16 @@ const Index = () => {
       return; // Don't allow deleting if it's the last timer
     }
     
-    setTimers(prev => prev.filter(timer => timer.id !== timerId));
+    const newTimers = timers.filter(timer => timer.id !== timerId);
+    updateTimers(newTimers);
     
     // If we're deleting the active timer, reset
     if (activeTimerId === timerId) {
-      setActiveTimerId(null);
+      updateSelectedTimerId(null);
       setCurrentTime(0);
       setIsRunning(false);
       setIsBreak(false);
-      setRoundCount(0);
+      updateRoundCount(0);
     }
   };
 
@@ -121,11 +143,12 @@ const Index = () => {
   };
 
   const handleSaveTimer = (id: number, label: string, duration: number) => {
-    setTimers(prev => prev.map(timer => 
+    const newTimers = timers.map(timer => 
       timer.id === id 
         ? { ...timer, label, duration }
         : timer
-    ));
+    );
+    updateTimers(newTimers);
     
     // If we're editing the currently active timer, update current time
     if (activeTimerId === id && !isRunning) {
@@ -158,12 +181,13 @@ const Index = () => {
     console.log('Ending break, completing round. Round count will be:', roundCount + 1);
     setIsBreak(false);
     // Increment round count when break ends (completing a full cycle)
-    setRoundCount(prev => prev + 1);
+    const newRoundCount = roundCount + 1;
+    updateRoundCount(newRoundCount);
     if (activeTimer) {
       setCurrentTime(activeTimer.duration);
       setIsRunning(true);
     }
-  }, [activeTimer, roundCount]);
+  }, [activeTimer, roundCount, updateRoundCount]);
 
   // Timer countdown effect
   useEffect(() => {
@@ -284,8 +308,10 @@ const Index = () => {
         <ControlPanel
           autoLoop={autoLoop}
           breakDuration={breakDuration}
-          onToggleAutoLoop={() => setAutoLoop(!autoLoop)}
-          onBreakDurationChange={setBreakDuration}
+          breakOptions={breakOptions}
+          onToggleAutoLoop={() => updateAutoLoop(!autoLoop)}
+          onBreakDurationChange={updateBreakDuration}
+          onBreakOptionsChange={updateBreakOptions}
         />
 
         {/* Timer Edit Dialog */}

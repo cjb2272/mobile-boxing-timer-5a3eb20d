@@ -7,17 +7,20 @@ import ThemeSelector from './ThemeSelector';
 interface ControlPanelProps {
   autoLoop: boolean;
   breakDuration: number;
+  breakOptions: number[];
   onToggleAutoLoop: () => void;
   onBreakDurationChange: (duration: number) => void;
+  onBreakOptionsChange: (options: number[]) => void;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
   autoLoop,
   breakDuration,
+  breakOptions,
   onToggleAutoLoop,
   onBreakDurationChange,
+  onBreakOptionsChange,
 }) => {
-  const [breakOptions, setBreakOptions] = useState([15, 30, 45, 60, 90, 120]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -34,7 +37,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       const newOptions = [...breakOptions];
       const oldDuration = newOptions[editingIndex];
       newOptions[editingIndex] = newDuration;
-      setBreakOptions(newOptions);
+      onBreakOptionsChange(newOptions);
       
       // If the edited duration was the currently selected one, update it
       if (breakDuration === oldDuration) {
